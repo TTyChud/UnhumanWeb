@@ -5,7 +5,8 @@ import { MonoLabel } from "@/components/kit";
 import { BUILD, links } from "@/lib/site";
 
 const sections = [
-  { to: "/#architecture", label: "Engine" },
+  { to: "/#pipeline", label: "Engine" },
+  { to: "/#simulation", label: "Simulation" },
   { to: "/docs", label: "Docs" },
 ];
 
@@ -21,16 +22,20 @@ export function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.07] bg-background/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-5 md:px-8">
-        <Link to="/" className="flex items-center gap-2.5" aria-label="Unhuman Engine home">
+      <nav className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-5 md:gap-6 md:px-8">
+        <Link
+          to="/"
+          className="flex shrink-0 items-center gap-2.5"
+          aria-label="Unhuman Engine home"
+        >
           <img src="/icon.png" alt="" className="h-7 w-auto opacity-95" />
           <span className="flex items-baseline gap-1.5">
             <span className="text-[15px] font-semibold tracking-tight text-white">unhuman</span>
-            <MonoLabel className="text-primary/80">engine</MonoLabel>
+            <MonoLabel className="hidden text-primary/80 sm:inline">engine</MonoLabel>
           </span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-5">
+        <div className="ml-auto flex shrink-0 items-center gap-3 md:gap-5">
           {sections.map((section) =>
             section.to.startsWith("/#") ? (
               <a
@@ -62,7 +67,8 @@ export function Nav() {
             rel="noreferrer"
             className="group inline-flex items-center gap-1.5 whitespace-nowrap rounded border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-primary transition-colors hover:border-primary/60 hover:bg-primary/15"
           >
-            <MonoLabel className="text-primary">{BUILD.version}</MonoLabel>
+            <MonoLabel className="text-primary sm:hidden">v0.01α</MonoLabel>
+            <MonoLabel className="hidden text-primary sm:inline">{BUILD.version}</MonoLabel>
             <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
           </a>
         </div>

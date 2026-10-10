@@ -45,8 +45,8 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            A hand-written C++ game engine. Open source under MIT, Linux first, developed in the
-            open.
+            A hand-written real-time 3D engine for robotics and games. Open source under MIT, Linux
+            first, developed in the open.
           </p>
           <Link
             to="/docs"

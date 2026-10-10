@@ -6,11 +6,11 @@ import { GithubMark, MonoLabel } from "@/components/kit";
 import { links } from "@/lib/site";
 
 const specs = [
+  { key: "Domain", value: "Robotics · Games" },
   { key: "RHI", value: "Vulkan 1.1+" },
   { key: "Shaders", value: "Slang → SPIR-V" },
-  { key: "Language", value: "C++23" },
   { key: "ECS", value: "entt" },
-  { key: "Physics", value: "Jolt · Box2D" },
+  { key: "Physics", value: "Jolt 3D · Box2D 2D" },
   { key: "Tooling", value: "ImGui · Tracy" },
 ];
 
@@ -55,6 +55,29 @@ const subsystems = [
   },
 ];
 
+const simulation = [
+  {
+    index: "a",
+    title: "Physics stepping",
+    body: "PhysicsSystem3D::Update(Timestep) advances Jolt bodies on the engine clock; Box2D covers the 2D path. Bodies are driven through Jolt's body interface, not a script layer.",
+  },
+  {
+    index: "b",
+    title: "Parallel work",
+    body: "Job system and task graph keep batch work off the frame thread: per-frame work stays on the main loop while batches run on the workers.",
+  },
+  {
+    index: "c",
+    title: "Headless rendering",
+    body: "The CI smoke test renders offscreen on Lavapipe, so a scene can be drawn without a display or a physical GPU.",
+  },
+  {
+    index: "d",
+    title: "Scene state as text",
+    body: "Entities serialise to YAML and models import through fastgltf, so a scene stays reviewable in a diff.",
+  },
+];
+
 const corners = [
   "left-0 top-0 border-l border-t",
   "right-0 top-0 border-r border-t",
@@ -85,13 +108,13 @@ export default function Home() {
           </div>
 
           <h1 className="mt-6 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl">
-            A game engine written by hand, down to the command buffer.
+            A robotics and games engine, written by hand down to the command buffer.
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-            Open-source C++23 engine: Vulkan RHI without a framework doing the thinking, Slang
-            shaders compiled at runtime, entt ECS, Jolt and Box2D physics, ImGui editor. Linux
-            first, Windows too.
+            Open-source C++23 real-time 3D engine: Vulkan RHI without a framework doing the thinking,
+            Slang shaders compiled at runtime, entt ECS, Jolt and Box2D physics stepped on the engine
+            clock, and an ImGui editor. Built for simulation and play on Linux and Windows.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -192,7 +215,7 @@ export default function Home() {
           <div className="flex items-baseline gap-3">
             <MonoLabel className="text-primary">01</MonoLabel>
             <h2 className="text-xl font-semibold uppercase tracking-[0.02em] text-white md:text-2xl">
-              Frame pipeline
+              Engine loop
             </h2>
           </div>
           <a
@@ -221,11 +244,42 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ------------------------------------------------ simulation lane */}
+      <section id="simulation" className="scroll-mt-20 pt-16">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.07] pb-4">
+          <div className="flex items-baseline gap-3">
+            <MonoLabel className="text-primary">02</MonoLabel>
+            <h2 className="text-xl font-semibold uppercase tracking-[0.02em] text-white md:text-2xl">
+              Built for simulation
+            </h2>
+          </div>
+          <a
+            href={links.module("UHE/src/UHE/Physics")}
+            target="_blank"
+            rel="noreferrer"
+            className="mono-label inline-flex items-center gap-1.5 transition-colors hover:text-white"
+          >
+            Physics sources
+            <ArrowUpRight className="h-3 w-3" />
+          </a>
+        </div>
+
+        <div className="grid grid-cols-1 border-l border-t border-white/[0.07] sm:grid-cols-2 lg:grid-cols-4">
+          {simulation.map((item) => (
+            <div key={item.index} className="border-b border-r border-white/[0.07] p-6">
+              <MonoLabel className="text-white/30">{item.index}</MonoLabel>
+              <h3 className="mt-4 text-base font-medium text-white">{item.title}</h3>
+              <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ---------------------------------------------------- subsystems */}
       <section id="architecture" className="scroll-mt-20 pt-16">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.07] pb-4">
           <div className="flex items-baseline gap-3">
-            <MonoLabel className="text-primary">02</MonoLabel>
+            <MonoLabel className="text-primary">03</MonoLabel>
             <h2 className="text-xl font-semibold uppercase tracking-[0.02em] text-white md:text-2xl">
               Subsystems
             </h2>
@@ -267,7 +321,7 @@ export default function Home() {
       <section className="pt-16">
         <div className="panel grid gap-6 p-7 md:grid-cols-[1fr_1.1fr] md:items-center md:p-9">
           <div>
-            <MonoLabel className="text-primary">03 / Build it</MonoLabel>
+            <MonoLabel className="text-primary">04 / Build it</MonoLabel>
             <h2 className="mt-3 text-xl font-semibold tracking-tight text-white md:text-2xl">
               Clone, configure, build.
             </h2>

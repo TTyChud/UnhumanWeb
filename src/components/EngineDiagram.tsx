@@ -1,8 +1,8 @@
 /**
  * Frame-pipeline schematic. Nodes and edges mirror real names in
- * UHE/src (Application · LayerStack · Scene · Jobsystem · Renderer3D ·
- * Platform/Vulkan). The render-graph node is dashed because the in-tree
- * state is still "in progress" — see docs/ROADMAP.md.
+ * UHE/src (Application · LayerStack · Scene · Jobsystem · Physics ·
+ * Renderer3D · Platform/Vulkan). The render-graph node is dashed because the
+ * in-tree state is still "in progress" — see docs/ROADMAP.md.
  */
 const INK = "#e6e9ec";
 const MUTED = "#8b939c";
@@ -20,8 +20,16 @@ const nodes = [
   { x: 806, title: "Swapchain", sub: "frame context · fences" },
 ];
 
+const rail = [
+  { x: 76, title: "ImGui editor", sub: "dock · gizmos · drag-drop" },
+  { x: 308, title: "Physics step", sub: "Jolt (3D) · Box2D (2D)" },
+  { x: 540, title: "Tracy · spdlog", sub: "instrumentation" },
+  { x: 772, title: "sandbox · tests/", sub: "ModelTestLayer · ctest -L unit" },
+];
+
 const NODE_W = 124;
 const NODE_H = 54;
+const RAIL_W = 212;
 
 function Arrow({ from, to }: { from: number; to: number }) {
   return (
@@ -36,20 +44,23 @@ export default function EngineDiagram() {
   return (
     <div className="overflow-x-auto">
       <svg
-        viewBox="0 0 1000 330"
+        viewBox="0 0 1000 350"
         role="img"
-        aria-label="Frame pipeline: Application and LayerStack feed the entt Scene, which is driven by the task graph into Renderer2D/3D, compiled through the Vulkan RHI and presented by the swapchain."
+        aria-label="Frame pipeline: Application and LayerStack feed the entt Scene, whose bodies are stepped by Jolt and Box2D; the task graph drives Renderer2D/3D, shaders come from Slang, and the Vulkan RHI presents through the swapchain. Editor, physics, Tracy and the sandbox tests hang off the same loop; the render graph is in progress."
         className="min-w-[760px] w-full"
         style={{ fontFamily: "'JetBrains Mono', ui-monospace, monospace" }}
       >
         {/* frame */}
-        <rect x="0.5" y="0.5" width="999" height="329" fill="none" stroke={LINE} strokeDasharray="2 6" />
+        <rect x="0.5" y="0.5" width="999" height="349" fill="none" stroke={LINE} strokeDasharray="2 6" />
 
         {/* lane labels */}
         <text x="16" y="52" fill={MUTED} fontSize="10" letterSpacing="1.5">
           FRAME
         </text>
-        <text x="16" y="240" fill={MUTED} fontSize="10" letterSpacing="1.5">
+        <text x="16" y="250" fill={MUTED} fontSize="10" letterSpacing="1.5">
+          SIM
+        </text>
+        <text x="16" y="264" fill={MUTED} fontSize="10" letterSpacing="1.5">
           TOOLS
         </text>
 
@@ -106,7 +117,7 @@ export default function EngineDiagram() {
         <g>
           <rect
             x="812"
-            y="182"
+            y="162"
             width="172"
             height="44"
             rx="3"
@@ -115,56 +126,45 @@ export default function EngineDiagram() {
             strokeOpacity="0.5"
             strokeDasharray="4 4"
           />
-          <text x="824" y="202" fill={INK} fontSize="11">
+          <text x="824" y="182" fill={INK} fontSize="11">
             Render graph
           </text>
-          <text x="824" y="217" fill={AMBER} fontSize="9.5">
+          <text x="824" y="197" fill={AMBER} fontSize="9.5">
             in progress
           </text>
-          <path d="M722 126 V204 H812" stroke={LINE} fill="none" strokeDasharray="3 4" />
+          <path d="M722 146 V184 H812" stroke={LINE} fill="none" strokeDasharray="3 4" />
         </g>
 
-        {/* tooling rail */}
+        {/* simulation + tooling rail */}
         <g>
-          <rect x="206" y="212" width="152" height="44" rx="3" fill={SURFACE} stroke={LINE} />
-          <text x="218" y="232" fill={INK} fontSize="11">
-            ImGui editor
-          </text>
-          <text x="218" y="247" fill={MUTED} fontSize="9.5">
-            docking · gizmos
-          </text>
-          <path d="M282 212 V169" stroke={LINE} fill="none" />
-          <path d="M279 174 L282 169 L285 174" stroke={MUTED} fill="none" />
-        </g>
-
-        <g>
-          <rect x="392" y="212" width="152" height="44" rx="3" fill={SURFACE} stroke={LINE} />
-          <text x="404" y="232" fill={INK} fontSize="11">
-            Tracy · spdlog
-          </text>
-          <text x="404" y="247" fill={MUTED} fontSize="9.5">
-            instrumentation
-          </text>
-          <path d="M468 212 V169" stroke={LINE} fill="none" strokeDasharray="3 4" />
-        </g>
-
-        <g>
-          <rect x="578" y="212" width="212" height="44" rx="3" fill={SURFACE} stroke={LINE} />
-          <text x="590" y="232" fill={INK} fontSize="11">
-            sandbox · tests/
-          </text>
-          <text x="590" y="247" fill={MUTED} fontSize="9.5">
-            ModelTestLayer · ctest -L unit
-          </text>
-          <path d="M684 212 V169" stroke={LINE} fill="none" strokeDasharray="3 4" />
+          {rail.map((item) => (
+            <g key={item.title}>
+              <rect x={item.x} y="232" width={RAIL_W} height="44" rx="3" fill={SURFACE} stroke={LINE} />
+              <text x={item.x + 12} y="252" fill={INK} fontSize="11">
+                {item.title}
+              </text>
+              <text x={item.x + 12} y="267" fill={MUTED} fontSize="9.5">
+                {item.sub}
+              </text>
+              <path
+                d={`M${item.x + RAIL_W / 2} 232 V216`}
+                stroke={LINE}
+                fill="none"
+                strokeDasharray="3 4"
+              />
+            </g>
+          ))}
+          {/* rail bus, tied back into the frame lane */}
+          <path d="M182 216 H878" stroke={LINE} fill="none" strokeDasharray="3 4" />
+          <path d="M430 216 V152" stroke={LINE} fill="none" strokeDasharray="3 4" />
         </g>
 
         {/* legend */}
         <g fontSize="9.5" fill={MUTED}>
-          <path d="M16 300 h22" stroke={ACCENT} strokeOpacity="0.7" />
-          <text x="44" y="303">frame path</text>
-          <path d="M136 300 h22" stroke={LINE} strokeDasharray="3 4" />
-          <text x="164" y="303">tooling / in progress</text>
+          <path d="M16 320 h22" stroke={ACCENT} strokeOpacity="0.7" />
+          <text x="44" y="323">frame path</text>
+          <path d="M136 320 h22" stroke={LINE} strokeDasharray="3 4" />
+          <text x="164" y="323">simulation, tooling, in progress</text>
         </g>
       </svg>
     </div>

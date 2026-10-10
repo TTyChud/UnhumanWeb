@@ -1,8 +1,8 @@
 # UnhumanWeb
 
 Marketing and documentation site for [Unhuman Engine](https://github.com/unhuman-engine/UNHUMAN) —
-an open-source, hand-written C++23 game engine (Vulkan RHI, Slang → SPIR-V shaders, entt ECS,
-Jolt/Box2D physics, ImGui editor). MIT.
+an open-source, hand-written C++23 real-time 3D engine for robotics and games (Vulkan RHI,
+Slang → SPIR-V shaders, entt ECS, Jolt/Box2D physics, ImGui editor). MIT.
 
 Live: <https://www.unhumanengine.xyz>
 

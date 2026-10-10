@@ -24,6 +24,7 @@ const sections = [
 const requirements = [
   ["OS", "Linux (primary target) · Windows"],
   ["GPU", "Vulkan 1.1+ — low-end floor is Vega 7 / GFX9 class hardware"],
+  ["Headless", "The renderer also runs offscreen (CI smoke test renders on Lavapipe, no display needed)"],
   ["Compiler", "C++23 capable: GCC, Clang or MSVC"],
   ["Build", "CMake ≥ 3.21 (presets) + Ninja"],
   ["Git", "clone with submodules — dependencies are vendored"],
@@ -270,7 +271,7 @@ export default function Docs() {
             id="overview"
             index="00"
             title="Overview"
-            summary="UHE is a hand-written, cross-platform C++ game engine: a Vulkan RHI written directly against the API, Slang shaders compiled to SPIR-V at runtime, entt ECS, Jolt and Box2D physics, an ImGui editor, a job system with a task graph, Tracy profiling, and a sandbox layer that acts as the only honest acceptance test."
+            summary="UHE is a hand-written, cross-platform C++23 real-time 3D engine for robotics and games: a Vulkan RHI written directly against the API, Slang shaders compiled to SPIR-V at runtime, entt ECS, Jolt (3D) and Box2D (2D) physics stepped from the engine loop, an ImGui editor, a job system with a task graph, Tracy profiling, and a sandbox layer that acts as the only honest acceptance test."
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="panel p-5">
