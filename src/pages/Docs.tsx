@@ -16,6 +16,8 @@ const sections = [
   { id: "layout", label: "Source layout" },
   { id: "libraries", label: "Third-party" },
   { id: "status", label: "Status" },
+  { id: "roadmap", label: "Roadmap · coming soon" },
+  { id: "docs-to-write", label: "Docs to write" },
   { id: "contributing", label: "Contributing" },
   { id: "in-repo-docs", label: "In-repo docs" },
   { id: "releases", label: "Releases" },
@@ -71,16 +73,56 @@ const libraries = [
   ["Profiling & logging", "Tracy, spdlog"],
 ];
 
+/** Status chips use the engine's own vocabulary (docs/ROADMAP.md). */
+const tones = {
+  built: "text-primary border-primary/30 bg-primary/10",
+  progress: "text-amber-400 border-amber-400/30 bg-amber-400/10",
+  soon: "text-white/50 border-white/15 bg-white/[0.03]",
+} as const;
+
+function Chip({ label, tone }: { label: string; tone: keyof typeof tones }) {
+  return (
+    <span
+      className={`mono-label inline-flex whitespace-nowrap rounded border px-2 py-0.5 ${tones[tone]}`}
+    >
+      {label}
+    </span>
+  );
+}
+
+/** Area, state, chip label, chip tone — from IDEA.md plus the docs/ status blocks. */
 const status = [
-  ["Vulkan backend", "Works on GFX9; descriptor backend modernised; sync2 path plus a Vulkan 1.1 fallback in progress (PR #27)"],
-  ["JobSystem + TaskGraph", "Implemented and documented"],
-  ["Rendering", "Deferred-ish single-pass renderer, PBR-ish shading, MSDF text"],
-  ["glTF", "Partial: baseColor + metallicRoughness only — foliage and multi-node models render wrong (#29)"],
-  ["Audio", "miniaudio integration landed; assets, voices and buses not designed in yet"],
-  ["Assets", "Path-based, no registry, AssestsManager naming debt"],
-  ["Render graph", "Designed in detail, empty stub in the tree"],
-  ["CI", "Builds both platforms, headless Lavapipe smoke test, sanitizer workflows"],
-  ["Editor", "ImGui editor, docking, gizmos, drag-and-drop; entity hierarchy is single-parent only (#17)"],
+  ["Vulkan backend", "Works on GFX9; descriptor backend modernised; sync2 path plus a Vulkan 1.1 fallback in progress (PR #27)", "in progress", "progress"],
+  ["JobSystem + TaskGraph", "Implemented and documented", "built", "built"],
+  ["Rendering", "Deferred-ish single-pass renderer, PBR-ish shading, MSDF text", "partial", "progress"],
+  ["glTF", "Partial: baseColor + metallicRoughness only — foliage and multi-node models render wrong (#29)", "partial", "progress"],
+  ["Audio", "miniaudio integration landed; assets, voices and buses not designed in yet", "partial", "progress"],
+  ["Assets", "Path-based, no registry, AssestsManager naming debt; registry and async load are phase A of a design doc (#24)", "design", "soon"],
+  ["Render graph", "Designed in detail, empty stub in the tree — RenderGraphVulkan.* has no bodies and no callers", "stub", "soon"],
+  ["Scripting", "Lua 5.4 + sol2 designed in docs/architecture/scripting.md (#28); no code yet", "design", "soon"],
+  ["Compute pipeline", "VulkanComputePipeline.* exists but is referenced nowhere else", "unused", "soon"],
+  ["CI", "Builds both platforms, headless Lavapipe smoke test, sanitizer workflows; unit-test rollout still partial", "partial", "progress"],
+  ["Editor", "ImGui editor, docking, gizmos, drag-and-drop; entity hierarchy is single-parent only (#17)", "partial", "progress"],
+] as const;
+
+/** Order and status from docs/WORK_ORDER.md — the repo's short "what comes next" list. */
+const roadmap = [
+  ["1", "Vulkan sync", "Capability tiers, barrier and submit encoders, legacy fallback toggle, CI legacy leg, timeline semaphores, deferred destruction", "in progress", "progress", [2, 27, 31]],
+  ["2", "Multithreading", "Per-thread command pools, work-stealing queues, coroutine continuations, secondary command-buffer recording, TaskGraph driving the frame", "in progress", "progress", [5, 37]],
+  ["3", "RHI core and descriptors", "Explicit barriers, copy and dispatch, queues and SubmitDesc, descriptor frontend with a global set bound once and per-pass sets", "coming soon", "soon", [30, 14]],
+  ["4", "Render graph backend", "Resource-state tracking, builder and compiler (sort, cull, barriers), executor on TaskGraph, pipeline and render-pass caches", "coming soon", "soon", [4, 32, 35]],
+  ["5", "Renderer and materials", "glTF correctness (alpha, cull, sRGB, normal, AO, node transforms), culling, instancing, shadows, IBL, post stack, extended PBR, KTX2", "coming soon", "soon", [29, 25, 7, 36, 42, 34, 43]],
+  ["6", "Assets and audio", "Registry and stable IDs, async load on jobs, VFS with scenes storing IDs, dependency graph, audio voices and buses, cooked runtime format", "coming soon", "soon", [38, 45, 24]],
+  ["7", "Editor, UI, animation, scripting", "Entity hierarchy, editor ergonomics (console, undo/redo, asset browser, play-in-editor), runtime UI, animation systems, Lua and sol2", "coming soon", "soon", [17, 28, 24, 41, 44]],
+  ["8", "CI/CD", "Tier-0 gates and caching, sanitizer matrix and unit tests, Android compile gate, validation-strict GPU job with golden images, release and nightly", "coming soon", "soon", [9, 10, 39]],
+] as const;
+
+/** "Documents still to write" — copied verbatim in intent from docs/README.md (issue #12). */
+const docsToWrite = [
+  ["architecture/rendering-pipeline.md", "How a frame flows today, from draw list to RHI to Vulkan, for people landing pull requests. The existing docs describe where it should go rather than where it is."],
+  ["architecture/ecs-and-scene.md", "entt usage, scene serialisation and the entity hierarchy (#17)."],
+  ["dev/testing.md", "Running the headless renderer smoke and the sanitizer builds, and later CTest."],
+  ["dev/build.md", "Presets, CMakePresets.json, sanitizer builds, and the Slang and vendor fetch."],
 ];
 
 const contributing = [
@@ -95,17 +137,18 @@ const contributing = [
   "Sign the CLA before a first pull request is merged.",
 ];
 
-const inRepoDocs = [
+/** File, covers, chip label, chip tone (docs/README.md status blocks). */
+const inRepoDocs: (readonly [string, string] | readonly [string, string, string, keyof typeof tones])[] = [
   ["docs/README.md", "documentation index — start here"],
-  ["docs/ROADMAP.md", "the work order, vocabulary and milestones"],
-  ["docs/WORK_ORDER.md", "current work item"],
-  ["docs/architecture/vulkan-sync-and-rendergraph.md", "synchronisation and the render graph"],
-  ["docs/architecture/framegraph-and-rendergraph.md", "frame graph design"],
-  ["docs/architecture/jobsystem.md", "job system and task graph"],
-  ["docs/architecture/assets-and-audio.md", "assets and audio design"],
-  ["docs/architecture/scripting.md", "scripting design"],
-  ["docs/architecture/ci-cd.md", "pipelines and test infrastructure"],
-  ["docs/backlog/renderer.md", "renderer backlog"],
+  ["docs/ROADMAP.md", "work order, status vocabulary, milestones, decision register"],
+  ["docs/WORK_ORDER.md", "the short 'what comes next' list"],
+  ["docs/architecture/vulkan-sync-and-rendergraph.md", "sync2 and legacy tiers, barrier and submit encoders, render-graph backend", "design", "soon"],
+  ["docs/architecture/framegraph-and-rendergraph.md", "frame graph frontend vs render graph backend — the separate frontend layer was dropped", "archived", "soon"],
+  ["docs/architecture/jobsystem.md", "job-system thread pool and TaskGraph DAG executor", "implemented", "built"],
+  ["docs/architecture/assets-and-audio.md", "asset identity, refcounting, async load; audio voices and buses", "design", "soon"],
+  ["docs/architecture/scripting.md", "Lua 5.4 with sol2: VM, bindings, ECS integration, hot reload", "design", "soon"],
+  ["docs/architecture/ci-cd.md", "CI tiers, sanitizers, test infrastructure, rollout order", "partial", "progress"],
+  ["docs/backlog/renderer.md", "Vulkan renderer status, mirroring issue #7"],
   ["docs/reference/libraries.md", "third-party library shortlist"],
   ["IDEA.md", "what the engine is, why it exists, what it is not"],
 ];
@@ -411,14 +454,82 @@ export default function Docs() {
             id="status"
             index="07"
             title="Status"
-            summary="Snapshot taken from IDEA.md, dated 2026-09-13. Check the roadmap and issue tracker before relying on any row."
+            summary="Snapshot taken from IDEA.md and the status blocks in docs/, dated 2026-09-13. Check the roadmap and issue tracker before relying on any row."
           >
-            <Table head={["Area", "State"]} rows={status} />
+            <Table
+              head={["Area", "State", "Status"]}
+              rows={status.map(([area, state, label, tone]) => [
+                area,
+                state,
+                <Chip key={label} label={label} tone={tone} />,
+              ])}
+            />
+          </Section>
+
+          <Section
+            id="roadmap"
+            index="08"
+            title="Roadmap"
+            summary="The engine's work order, copied from docs/WORK_ORDER.md and docs/ROADMAP.md. Stages 1 and 2 are the current focus; the rest are coming soon, not started."
+          >
+            <Table
+              head={["Stage", "Work", "Status", "Issues"]}
+              rows={roadmap.map(([order, stage, work, label, tone, issues]) => [
+                <span key={stage}>
+                  <span className="mono mr-2 text-white/30">{order}</span>
+                  {stage}
+                </span>,
+                work,
+                <Chip key={label} label={label} tone={tone} />,
+                <span key={`${order}-i`} className="mono text-[12px]">
+                  {issues.map((issue, i) => (
+                    <span key={issue}>
+                      {i > 0 ? " · " : ""}
+                      <a
+                        href={`${REPO}/issues/${issue}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="link-underline text-white/70 hover:text-white"
+                      >
+                        #{issue}
+                      </a>
+                    </span>
+                  ))}
+                </span>,
+              ])}
+            />
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Dropped on 2026-09-24: the standalone FrameGraph frontend — feature code declares passes
+              into the render graph backend directly. Deferred: terrain, water/SSR, memory aliasing.
+            </p>
+          </Section>
+
+          <Section
+            id="docs-to-write"
+            index="09"
+            title="Docs still to write"
+            summary="Listed under 'Documents still to write' in docs/README.md and tracked as issue #12. Until then, the pages above are the whole story."
+          >
+            <Table
+              head={["Planned file", "Will cover", "Status"]}
+              rows={docsToWrite.map(([file, what]) => [
+                <span key={file} className="mono text-[13px] text-white/80">
+                  {file}
+                </span>,
+                what,
+                <Chip key={`${file}-s`} label="coming soon" tone="soon" />,
+              ])}
+            />
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              The list is maintained in the repository:{" "}
+              <DocLink href={links.docsIndex}>docs/README.md</DocLink> ·{" "}
+              <DocLink href={`${REPO}/issues/12`}>issue #12</DocLink>.
+            </p>
           </Section>
 
           <Section
             id="contributing"
-            index="08"
+            index="10"
             title="Contributing"
             summary="The full rules live in CONTRIBUTING.md and CLA.md — this is the summary."
           >
@@ -438,24 +549,28 @@ export default function Docs() {
 
           <Section
             id="in-repo-docs"
-            index="09"
+            index="11"
             title="In-repo documentation"
-            summary="The engine keeps its design docs next to the code. file:line references in them are snapshots — re-verify before acting."
+            summary="The engine keeps its design docs next to the code, each opening with a status block. file:line references in them are snapshots — re-verify before acting."
           >
             <Table
-              head={["File", "Covers"]}
-              rows={inRepoDocs.map(([file, what]) => [
-                <DocLink key={file} href={file.startsWith("docs/") || file === "IDEA.md" ? `${REPO}/blob/master/${file}` : file}>
+              head={["File", "Covers", "Status"]}
+              rows={inRepoDocs.map(([file, what, label, tone]) => [
+                <DocLink
+                  key={file}
+                  href={file.startsWith("docs/") || file === "IDEA.md" ? `${REPO}/blob/master/${file}` : file}
+                >
                   {file}
                 </DocLink>,
                 what,
+                label && tone ? <Chip key={`${file}-s`} label={label} tone={tone} /> : <span className="text-white/25">reference</span>,
               ])}
             />
           </Section>
 
           <Section
             id="releases"
-            index="10"
+            index="12"
             title="Releases"
             summary="Pre-alpha tags only. Build from source unless you are specifically testing a release artifact."
           >
