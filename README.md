@@ -135,6 +135,8 @@ the change that prompted it, and keep the snapshot date in the section copy hone
 - `public/logo.png` — 1200px mark, used as the `og:image` / `twitter:image` preview.
 - `public/demo.webm` — editor capture, 3.4 MB, the landing-page viewport.
 - `public/demo-poster.webp` — its first frame (1280×720, 34 KB), shown until playback starts.
+- `public/sandbox-2026-09-12.mp4` — 22 s OBS capture of the sandbox with the editor docked, 1920×1080
+  60 fps with an audio track. Not referenced by the app yet.
 - `public/sculpture.webp`, `public/sculpture-dark.webp` — the hero sculpture (1983×793, matching flat
   backgrounds for the paper and ink themes). The engine detects the flat background from the image
   corners, so a replacement needs one flat, uniform background colour.
